@@ -1,0 +1,48 @@
+
+<!DOCTYPE html>
+<html lang="en" data-theme="black">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chekwube Immanuel Portfolio</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    html[data-theme='black']  { --bg: #000; --text: #fff; }
+    html[data-theme='white'] { --bg: #fff; --text: #000; }
+    html[data-theme='blue']  { --bg: #e0f0ff; --text: #003366; }
+    html[data-theme='yellow']{ --bg: #000; --text: #FFD700; }
+    body { background-color: var(--bg); color: var(--text); transition: 0.3s; }
+  </style>
+</head>
+<body class="min-h-screen p-4">
+  <header class="flex justify-between items-center mb-4">
+    <h1 class="text-2xl font-bold">Chekwube Immanuel Portfolio</h1>
+    <select id="theme" class="border p-2 rounded">
+      <option value="black">Black</option>
+      <option value="white">White</option>
+      <option value="blue">Blue & White</option>
+      <option value="yellow">Yellow & Black</option>
+    </select>
+  </header>
+  <main id="gallery" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></main>
+  <script>
+    document.getElementById('theme').addEventListener('change', e => {
+      document.documentElement.setAttribute('data-theme', e.target.value);
+    });
+
+    async function loadGallery() {
+      const res = await fetch("/api/works");
+      const data = await res.json();
+      const gallery = document.getElementById("gallery");
+      gallery.innerHTML = data.map(item => {
+        const media = item.type.startsWith("video") ?
+          \`<video controls class="w-full"><source src="\${item.url}" type="\${item.type}"></video>\` :
+          \`<img src="\${item.url}" alt="\${item.title}" class="w-full h-auto rounded shadow">\`;
+        return \`<div class="bg-gray-800 p-2 rounded">\${media}<h2 class="font-semibold">\${item.title}</h2><p>\${item.desc}</p></div>\`;
+      }).join("");
+    }
+
+    loadGallery();
+  </script>
+</body>
+</html>
